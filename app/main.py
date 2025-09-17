@@ -10,7 +10,7 @@ import tempfile
 import logging
 
 app = Flask(__name__)
-print(f'VECTOR_DB_PATH: {Config.VECTOR_DB_PATH}, OLLAMA_HOST: {Config.OLLAMA_HOST}')
+print(f'\n VECTOR_DB_PATH: {Config.VECTOR_DB_PATH}, OLLAMA_HOST: {Config.OLLAMA_HOST}, GROQ_API_KEY: {Config.GROQ_API_KEY}\n')
 vector_store = VectorStore(Config.VECTOR_DB_PATH, Config.OLLAMA_HOST)
 llm_service = LLMService(vector_store)
 
