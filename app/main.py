@@ -1,19 +1,23 @@
 from flask import Flask, request, render_template, jsonify
-import os
 from models.vector_store import VectorStore
+# from services.storage_service import S3Storage
+from services.llm_service import LLMService
 from config import Config
-import logging
-import tempfile
+import os
 from langchain.document_loaders import TextLoader, PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+import tempfile
+import logging
 
 app = Flask(__name__)
 vector_store = VectorStore(Config.VECTOR_DB_PATH, Config.OLLAMA_HOST)
+llm_service = LLMService(vector_store)
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -97,5 +101,18 @@ def upload_document():
         logger.error(f"Unexpected error: {str(e)}")
         return jsonify({'error': f'Unexpected error: {str(e)}'}), 500
     
+@app.route('/query', methods=['POST'])
+def query():
+    data = request.json
+    if 'question' not in data:
+        return jsonify({'error': 'No question provided'}), 400
+
+    try:
+        response = llm_service.get_response(data['question'])
+        return jsonify({'response': response})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug= True)
