@@ -26,4 +26,4 @@ class LLMService:
             return response['answer']
         except Exception as e:
             print(f"Error getting LLM response: {e}")
-            return "I encountered an error processing your request."
+            return "I encountered an error processing  your request."
